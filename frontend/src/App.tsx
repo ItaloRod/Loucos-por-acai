@@ -19,6 +19,9 @@ import Loyalty from './pages/Loyalty';
 import Profile from './pages/Profile';
 import Dashboard from './pages/Dashboard';
 import ProductsAdmin from './pages/admin/Products';
+import Customers from './pages/admin/Customers';
+import Employees from './pages/admin/Employees';
+
 
 // Placeholder para rotas das fases subsequentes
 const PlaceholderPage = ({ title }: { title: string }) => (
@@ -132,20 +135,14 @@ function AppContent() {
               path="/admin/orders"
               element={<PlaceholderPage title="Painel de Pedidos Ativos" />}
             />
-            <Route
-              path="/admin/customers"
-              element={<PlaceholderPage title="Gerenciamento de Clientes" />}
-            />
+            <Route path="/admin/customers" element={<Customers />} />
           </Route>
 
           {/* Rotas Protegidas de GERENTE (Administração Geral) */}
           <Route element={<ProtectedRoute allowedRoles={['GERENTE']} />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/admin/products" element={<ProductsAdmin />} />
-            <Route
-              path="/admin/employees"
-              element={<PlaceholderPage title="Gerenciamento de Funcionários" />}
-            />
+            <Route path="/admin/employees" element={<Employees />} />
           </Route>
         </Route>
 

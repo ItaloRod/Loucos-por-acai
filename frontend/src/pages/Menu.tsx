@@ -26,7 +26,6 @@ export const Menu = () => {
   const {
     data: productsData,
     isLoading: isLoadingProducts,
-    isFetching: isFetchingProducts,
   } = useGetProductsQuery(productParams);
 
   const products = productsData?.items || [];

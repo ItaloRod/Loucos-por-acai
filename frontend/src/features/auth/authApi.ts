@@ -1,6 +1,13 @@
 import { apiSlice } from '../../store/apiSlice';
 import type { User } from '../../store/authSlice';
-import type { LoginPayload, RegisterPayload, TokenResponse } from './types';
+import type {
+  LoginPayload,
+  RegisterPayload,
+  TokenResponse,
+  Address,
+  AddressCreatePayload,
+  AddressUpdatePayload,
+} from './types';
 
 export const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -36,6 +43,33 @@ export const authApi = apiSlice.injectEndpoints({
         method: 'POST',
       }),
     }),
+    getAddresses: builder.query<Address[], void>({
+      query: () => '/users/me/addresses',
+      providesTags: ['User'],
+    }),
+    createAddress: builder.mutation<Address, AddressCreatePayload>({
+      query: (body) => ({
+        url: '/users/me/addresses',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['User'],
+    }),
+    updateAddress: builder.mutation<Address, { id: string; body: AddressUpdatePayload }>({
+      query: ({ id, body }) => ({
+        url: `/users/me/addresses/${id}`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: ['User'],
+    }),
+    deleteAddress: builder.mutation<{ detail: string }, string>({
+      query: (id) => ({
+        url: `/users/me/addresses/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['User'],
+    }),
   }),
 });
 
@@ -46,4 +80,9 @@ export const {
   useGetMeQuery,
   useLazyGetMeQuery,
   useRefreshTokenMutation,
+  useGetAddressesQuery,
+  useCreateAddressMutation,
+  useUpdateAddressMutation,
+  useDeleteAddressMutation,
 } = authApi;
+

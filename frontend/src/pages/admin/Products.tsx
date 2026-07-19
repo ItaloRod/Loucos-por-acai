@@ -9,10 +9,7 @@ import {
   Upload,
   Check,
   X,
-  Sparkles,
   AlertTriangle,
-  FolderOpen,
-  ArrowUpDown,
 } from 'lucide-react';
 import {
   useGetCategoriesQuery,
