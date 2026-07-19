@@ -32,3 +32,34 @@ class UserOut(UserBase):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class StampCardOut(BaseModel):
+    id: uuid.UUID
+    customer_id: uuid.UUID
+    current_stamps: int
+    total_stamps_earned: int
+    total_redemptions: int
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CustomerOut(UserOut):
+    stamp_card: StampCardOut | None = None
+
+
+class PaginatedCustomerOut(BaseModel):
+    items: list[CustomerOut]
+    total: int
+    page: int
+    pages: int
+
+
+class PaginatedEmployeeOut(BaseModel):
+    items: list[UserOut]
+    total: int
+    page: int
+    pages: int
+

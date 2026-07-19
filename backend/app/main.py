@@ -27,7 +27,7 @@ if settings.BACKEND_CORS_ORIGINS:
     )
 
 # Importação e registro de roteadores
-from app.routers import auth_router, users_router, catalog_router
+from app.routers import auth_router, users_router, catalog_router, customers_router, employees_router
 from fastapi.staticfiles import StaticFiles
 import os
 
@@ -37,6 +37,9 @@ os.makedirs("static/uploads", exist_ok=True)
 app.include_router(auth_router, prefix=settings.API_V1_STR)
 app.include_router(users_router, prefix=settings.API_V1_STR)
 app.include_router(catalog_router, prefix=settings.API_V1_STR)
+app.include_router(customers_router, prefix=settings.API_V1_STR)
+app.include_router(employees_router, prefix=settings.API_V1_STR)
+
 
 # Servir arquivos estáticos (imagens de produtos, etc.)
 app.mount("/static", StaticFiles(directory="static"), name="static")
