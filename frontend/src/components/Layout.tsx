@@ -17,7 +17,10 @@ import {
   History,
   Home,
   UtensilsCrossed,
+  ShoppingCart as ShoppingCartIcon,
 } from 'lucide-react';
+import { CartSidebar } from './CartSidebar';
+import { useGetCartQuery } from '../features/cart/cartApi';
 
 interface SidebarLink {
   to: string;
@@ -34,6 +37,10 @@ export const Layout = () => {
   const [logoutApi] = useLogoutMutation();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  const { data: cart } = useGetCartQuery(undefined, { skip: user?.role !== 'CLIENTE' });
+  const cartItemCount = cart?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0;
 
   const handleLogout = async () => {
     try {
@@ -186,6 +193,21 @@ export const Layout = () => {
           </div>
 
           <div className="flex items-center gap-4">
+            {user?.role === 'CLIENTE' && (
+              <button
+                onClick={() => setIsCartOpen(true)}
+                className="relative p-2 rounded-lg hover:bg-muted text-foreground transition-colors"
+                aria-label="Abrir carrinho"
+              >
+                <ShoppingCartIcon size={20} />
+                {cartItemCount > 0 && (
+                  <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-primary rounded-full">
+                    {cartItemCount}
+                  </span>
+                )}
+              </button>
+            )}
+
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-destructive hover:bg-destructive/5 rounded-lg border border-transparent hover:border-destructive/20 transition-all duration-200"
@@ -201,6 +223,8 @@ export const Layout = () => {
           <Outlet />
         </main>
       </div>
+
+      <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   );
 };

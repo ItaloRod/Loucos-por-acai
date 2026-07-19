@@ -21,7 +21,10 @@ import Dashboard from './pages/Dashboard';
 import ProductsAdmin from './pages/admin/Products';
 import Customers from './pages/admin/Customers';
 import Employees from './pages/admin/Employees';
-
+import { Checkout } from './pages/Checkout';
+import { OrderTracking } from './pages/OrderTracking';
+import { OrderHistory } from './pages/OrderHistory';
+import { OrdersAdmin } from './pages/admin/OrdersAdmin';
 
 // Placeholder para rotas das fases subsequentes
 const PlaceholderPage = ({ title }: { title: string }) => (
@@ -111,18 +114,17 @@ function AppContent() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
 
-          {/* Rota Protegida Comum (Edição de perfil próprio) */}
+          {/* Rota Protegida Comum (Edição de perfil próprio, rastreio) */}
           <Route element={<ProtectedRoute allowedRoles={['CLIENTE', 'FUNCIONARIO', 'GERENTE']} />}>
             <Route path="/profile" element={<Profile />} />
+            <Route path="/orders/:id" element={<OrderTracking />} />
           </Route>
 
           {/* Rotas Protegidas de CLIENTE */}
           <Route element={<ProtectedRoute allowedRoles={['CLIENTE']} />}>
             <Route path="/loyalty" element={<Loyalty />} />
-            <Route
-              path="/orders/history"
-              element={<PlaceholderPage title="Histórico de Pedidos do Cliente" />}
-            />
+            <Route path="/orders/history" element={<OrderHistory />} />
+            <Route path="/checkout" element={<Checkout />} />
           </Route>
 
           {/* Rotas Protegidas de FUNCIONARIO & GERENTE (Operação de Vendas) */}
@@ -131,10 +133,7 @@ function AppContent() {
               path="/pos"
               element={<PlaceholderPage title="Frente de Caixa / PDV (Ponto de Venda)" />}
             />
-            <Route
-              path="/admin/orders"
-              element={<PlaceholderPage title="Painel de Pedidos Ativos" />}
-            />
+            <Route path="/admin/orders" element={<OrdersAdmin />} />
             <Route path="/admin/customers" element={<Customers />} />
           </Route>
 

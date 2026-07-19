@@ -4,12 +4,18 @@ import {
   useGetCategoriesQuery,
   useGetProductsQuery,
 } from '../features/catalog/catalogApi';
+import { useAddToCartMutation } from '../features/cart/cartApi';
+import { AcaiBuilderModal } from '../components/AcaiBuilderModal';
 
 export const Menu = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('todos');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [page, setPage] = useState<number>(1);
   const pageSize = 12;
+
+  const [builderModalOpen, setBuilderModalOpen] = useState(false);
+  const [selectedBaseProduct, setSelectedBaseProduct] = useState<{ id: string; name: string; price: number } | null>(null);
+  const [addToCart] = useAddToCartMutation();
 
   // Buscar categorias do backend
   const { data: categories = [], isLoading: isLoadingCategories } = useGetCategoriesQuery();
@@ -221,6 +227,21 @@ export const Menu = () => {
 
                       <button
                         type="button"
+                        onClick={() => {
+                          if (product.is_base || categoryObj?.name.toLowerCase().includes('açaí')) {
+                            setSelectedBaseProduct({
+                              id: product.id,
+                              name: product.name,
+                              price: product.price,
+                            });
+                            setBuilderModalOpen(true);
+                          } else {
+                            addToCart({
+                              product_id: product.id,
+                              quantity: 1,
+                            }).unwrap().then(() => alert('Adicionado ao carrinho!')).catch(() => alert('Erro ao adicionar.'));
+                          }
+                        }}
                         className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-primary hover:bg-primary/95 text-primary-foreground text-xs font-bold transition-all duration-200 active:scale-95 shadow-sm hover:shadow-primary/20 shadow-transparent hover:shadow-md"
                       >
                         <Plus size={14} /> Adicionar
@@ -259,6 +280,20 @@ export const Menu = () => {
             </div>
           )}
         </div>
+      )}
+
+      {/* Modal Açaí Builder */}
+      {selectedBaseProduct && (
+        <AcaiBuilderModal
+          isOpen={builderModalOpen}
+          onClose={() => {
+            setBuilderModalOpen(false);
+            setSelectedBaseProduct(null);
+          }}
+          baseProductId={selectedBaseProduct.id}
+          baseProductName={selectedBaseProduct.name}
+          baseProductPrice={selectedBaseProduct.price}
+        />
       )}
     </div>
   );
