@@ -60,9 +60,9 @@ class Usuario(models.Model):
     login = models.CharField(max_length=45, null=True)
     senha = models.CharField(max_length=45, null=True)
     email = models.CharField(max_length=45)
-    endereco = models.ForeignKey(Endereco,blank=True, null=False)
-    telefone = models.ForeignKey(Telefone, blank=True, null=False)
-    user = models.OneToOneField(User, default=1)
+    endereco = models.ForeignKey(Endereco, on_delete=models.CASCADE, blank=True, null=False)
+    telefone = models.ForeignKey(Telefone, on_delete=models.CASCADE, blank=True, null=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, default=1)
 
     class Meta:
         db_table = 'modelo_usuario'
@@ -107,8 +107,8 @@ class Cartao(models.Model):
 class Cliente(models.Model):
 
     id = models.AutoField(primary_key=True)
-    usuario = models.ForeignKey(Usuario, blank=True, null=False)
-    cartao = models.ForeignKey(Cartao, blank=True, null=False)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, blank=True, null=False)
+    cartao = models.ForeignKey(Cartao, on_delete=models.CASCADE, blank=True, null=False)
     max_pontos = models.IntegerField(null=True)
 
     class Meta:
@@ -139,9 +139,9 @@ class Funcionario (models.Model):
     salario = models.FloatField()
     periodo_trabalho = models.CharField(max_length=45)
 
-    usuario = models.ForeignKey(Usuario, blank=True, null=False)
-    tipo_funcionario = models.ForeignKey(Tipofuncionario ,blank=True , null=False)
-    situacao = models.ForeignKey(Situacao, blank=True, null=False)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, blank=True, null=False)
+    tipo_funcionario = models.ForeignKey(Tipofuncionario, on_delete=models.CASCADE, blank=True, null=False)
+    situacao = models.ForeignKey(Situacao, on_delete=models.CASCADE, blank=True, null=False)
 
     class Meta:
         db_table = 'modelo_funcionario'
@@ -149,7 +149,7 @@ class Funcionario (models.Model):
 
 class Carrinho(models.Model):
 
-    estoque = models.ManyToManyField(Estoque, blank=True, null=True)
+    estoque = models.ManyToManyField(Estoque, blank=True)
     valor_Total = models.FloatField(default=0)
 
     class Meta:
@@ -159,9 +159,9 @@ class Atendimento(models.Model):
 
     id = models.AutoField(primary_key=True)
     data_compra = models.DateField(default=date.today)
-    funcionario = models.ForeignKey(Funcionario, blank=True, null=False)
-    cliente = models.ForeignKey(Cliente, blank=True, null=False)
-    carrinho = models.ForeignKey(Carrinho,blank=True, null=True)
+    funcionario = models.ForeignKey(Funcionario, on_delete=models.CASCADE, blank=True, null=False)
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, blank=True, null=False)
+    carrinho = models.ForeignKey(Carrinho, on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         db_table = 'modelo_atendimento'
@@ -172,9 +172,9 @@ class Trocapontos(models.Model):
     pontos_gastos = models.IntegerField()
     data = models.DateField('Data da troca')
     hora = models.CharField(max_length=45)
-    funcionario = models.ForeignKey(Funcionario, blank=True, null=False)
-    cliente = models.ForeignKey(Cliente,blank=True,null=False)
-    estoque = models.ForeignKey(Estoque,blank=True,null=False)
+    funcionario = models.ForeignKey(Funcionario, on_delete=models.CASCADE, blank=True, null=False)
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, blank=True, null=False)
+    estoque = models.ForeignKey(Estoque, on_delete=models.CASCADE, blank=True, null=False)
 
     class Meta:
         db_table = 'modelo_trocapontos'

@@ -78,5 +78,5 @@ class LoginForm (forms.ModelForm):
         exclude = ('nome','sobrenome','cpf','email','endereco','telefone',)
 
 class BuscaForm (forms.Form):
-    CPF = models.CharField(max_length=11)
+    CPF = forms.CharField(max_length=11)
 
