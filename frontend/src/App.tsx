@@ -1,101 +1,140 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from './assets/vite.svg';
-import heroImg from './assets/hero.png';
-import './App.css';
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from './store';
+import { useAppDispatch, useAppSelector } from './hooks/redux';
+import { useLazyGetMeQuery } from './features/auth/authApi';
+import { setCredentials, logOut, setLoading } from './store/authSlice';
 
-function App() {
-  const [count, setCount] = useState(0);
+// Páginas e Componentes
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
+import Layout from './components/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
+import Home from './pages/Home';
+import Menu from './pages/Menu';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Loyalty from './pages/Loyalty';
+import Profile from './pages/Profile';
+import Dashboard from './pages/Dashboard';
+
+// Placeholder para rotas das fases subsequentes
+const PlaceholderPage = ({ title }: { title: string }) => (
+  <div className="bg-card border border-border p-8 rounded-2xl shadow-sm text-center space-y-4 max-w-lg mx-auto my-12">
+    <span className="text-5xl">🛠️</span>
+    <h2 className="text-xl font-extrabold text-foreground tracking-tight">{title}</h2>
+    <p className="text-sm text-muted-foreground leading-relaxed">
+      Esta funcionalidade está planejada para as próximas etapas do plano de desenvolvimento (Fases 3 a 10).
+    </p>
+  </div>
+);
+
+// Componente Wrapper para inicialização de sessão
+const AppInitializer = ({ children }: { children: React.ReactNode }) => {
+  const dispatch = useAppDispatch();
+  const [triggerGetMe] = useLazyGetMeQuery();
+  const [initialized, setInitialized] = useState(false);
+
+  useEffect(() => {
+    const initializeAuth = async () => {
+      dispatch(setLoading(true));
+      try {
+        // Tentar obter o perfil do usuário logado via cookies httpOnly
+        const user = await triggerGetMe().unwrap();
+        dispatch(setCredentials(user));
+      } catch (error) {
+        // Sem sessão ativa ou token expirado
+        dispatch(logOut());
+      } finally {
+        dispatch(setLoading(false));
+        setInitialized(true);
+      }
+    };
+
+    initializeAuth();
+  }, [dispatch, triggerGetMe]);
+
+  if (!initialized) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" role="status">
+            <span className="sr-only">Inicializando...</span>
+          </div>
+          <p className="text-sm font-semibold text-primary/70 animate-pulse">Iniciando Loucos por Açaí...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+};
+
+function AppContent() {
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button type="button" className="counter" onClick={() => setCount((count) => count + 1)}>
-          Count is {count}
-        </button>
-      </section>
+    <BrowserRouter>
+      <Routes>
+        {/* Rotas de Autenticação */}
+        <Route 
+          path="/login" 
+          element={isAuthenticated ? <Navigate to={user?.role === 'CLIENTE' ? '/' : '/dashboard'} replace /> : <Login />} 
+        />
+        <Route 
+          path="/register" 
+          element={isAuthenticated ? <Navigate to="/" replace /> : <Register />} 
+        />
 
-      <div className="ticks"></div>
+        {/* Área do App com Layout Sidebar/Header */}
+        <Route element={<Layout />}>
+          {/* Rotas Públicas */}
+          <Route path="/" element={<Home />} />
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg className="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg className="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg className="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg className="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          {/* Rota Protegida Comum (Edição de perfil próprio) */}
+          <Route element={<ProtectedRoute allowedRoles={['CLIENTE', 'FUNCIONARIO', 'GERENTE']} />}>
+            <Route path="/profile" element={<Profile />} />
+          </Route>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+          {/* Rotas Protegidas de CLIENTE */}
+          <Route element={<ProtectedRoute allowedRoles={['CLIENTE']} />}>
+            <Route path="/loyalty" element={<Loyalty />} />
+            <Route path="/orders/history" element={<PlaceholderPage title="Histórico de Pedidos do Cliente" />} />
+          </Route>
+
+          {/* Rotas Protegidas de FUNCIONARIO & GERENTE (Operação de Vendas) */}
+          <Route element={<ProtectedRoute allowedRoles={['GERENTE', 'FUNCIONARIO']} />}>
+            <Route path="/pos" element={<PlaceholderPage title="Frente de Caixa / PDV (Ponto de Venda)" />} />
+            <Route path="/admin/orders" element={<PlaceholderPage title="Painel de Pedidos Ativos" />} />
+            <Route path="/admin/customers" element={<PlaceholderPage title="Gerenciamento de Clientes" />} />
+          </Route>
+
+          {/* Rotas Protegidas de GERENTE (Administração Geral) */}
+          <Route element={<ProtectedRoute allowedRoles={['GERENTE']} />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/admin/products" element={<PlaceholderPage title="Gerenciamento de Estoque & Produtos" />} />
+            <Route path="/admin/employees" element={<PlaceholderPage title="Gerenciamento de Funcionários" />} />
+          </Route>
+        </Route>
+
+        {/* Fallback de 404 */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+function App() {
+  return (
+    <Provider store={store}>
+      <AppInitializer>
+        <AppContent />
+      </AppInitializer>
+    </Provider>
   );
 }
 

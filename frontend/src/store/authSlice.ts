@@ -3,11 +3,15 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export type UserRole = 'CLIENTE' | 'FUNCIONARIO' | 'GERENTE';
 
 export interface User {
-  id: number;
-  cpf: string;
-  nome: string;
+  id: string;
   email: string;
+  first_name: string | null;
+  last_name: string | null;
+  cpf: string;
+  phone: string | null;
   role: UserRole;
+  is_active: boolean;
+  must_change_password: boolean;
 }
 
 interface AuthState {
