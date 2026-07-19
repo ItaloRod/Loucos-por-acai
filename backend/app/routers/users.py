@@ -4,9 +4,9 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.core.auth import get_current_user, RequireRole
 from app.core.security import get_password_hash
-from app.models.user import User, UserRole
+from app.models.user import User, UserRole, Address
 from app.models.loyalty import StampCard
-from app.schemas.user import UserUpdate, UserOut, UserCreate
+from app.schemas.user import UserUpdate, UserOut, UserCreate, AddressCreate, AddressUpdate, AddressOut
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -217,3 +217,97 @@ def delete_user_admin(
     user.is_active = False
     db.commit()
     return {"detail": f"Usuário {user.email} desativado com sucesso."}
+
+
+@router.get("/me/addresses", response_model=list[AddressOut])
+def list_my_addresses(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Retorna todos os endereços do usuário atualmente autenticado.
+    """
+    return db.query(Address).filter(Address.user_id == current_user.id).all()
+
+
+@router.post("/me/addresses", response_model=AddressOut, status_code=status.HTTP_201_CREATED)
+def create_my_address(
+    payload: AddressCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Cria um novo endereço para o usuário autenticado.
+    Se is_default for True, define todos os outros endereços do usuário como não padrão.
+    """
+    if payload.is_default:
+        db.query(Address).filter(Address.user_id == current_user.id).update({Address.is_default: False})
+
+    new_address = Address(
+        user_id=current_user.id,
+        street=payload.street,
+        number=payload.number,
+        complement=payload.complement,
+        neighborhood=payload.neighborhood,
+        city=payload.city,
+        state=payload.state,
+        zip_code=payload.zip_code,
+        is_default=payload.is_default
+    )
+    db.add(new_address)
+    db.commit()
+    db.refresh(new_address)
+    return new_address
+
+
+@router.put("/me/addresses/{address_id}", response_model=AddressOut)
+def update_my_address(
+    address_id: uuid.UUID,
+    payload: AddressUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Atualiza um endereço do usuário atualmente autenticado.
+    Se não for encontrado ou não pertencer ao usuário, retorna 404.
+    Se is_default for atualizado para True, define todos os outros endereços do usuário como não padrão.
+    """
+    address = db.query(Address).filter(Address.id == address_id, Address.user_id == current_user.id).first()
+    if not address:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Endereço não encontrado."
+        )
+
+    if payload.is_default is True:
+        db.query(Address).filter(Address.user_id == current_user.id).update({Address.is_default: False})
+
+    update_data = payload.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(address, key, value)
+
+    db.commit()
+    db.refresh(address)
+    return address
+
+
+@router.delete("/me/addresses/{address_id}", response_model=dict)
+def delete_my_address(
+    address_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Exclui um endereço do usuário atualmente autenticado.
+    Se não for encontrado ou não pertencer ao usuário, retorna 404.
+    """
+    address = db.query(Address).filter(Address.id == address_id, Address.user_id == current_user.id).first()
+    if not address:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Endereço não encontrado."
+        )
+
+    db.delete(address)
+    db.commit()
+    return {"detail": "Endereço excluído com sucesso."}

@@ -24,12 +24,42 @@ class UserUpdate(BaseModel):
     is_active: bool | None = None
     password: str | None = Field(default=None, min_length=6, max_length=100)
 
+class AddressBase(BaseModel):
+    street: str
+    number: str
+    complement: str | None = None
+    neighborhood: str
+    city: str
+    state: str = Field(..., max_length=2)
+    zip_code: str = Field(..., pattern=r"^\d{5}-\d{3}$")
+    is_default: bool
+
+class AddressCreate(AddressBase):
+    pass
+
+class AddressUpdate(BaseModel):
+    street: str | None = None
+    number: str | None = None
+    complement: str | None = None
+    neighborhood: str | None = None
+    city: str | None = None
+    state: str | None = Field(default=None, max_length=2)
+    zip_code: str | None = Field(default=None, pattern=r"^\d{5}-\d{3}$")
+    is_default: bool | None = None
+
+class AddressOut(AddressBase):
+    id: uuid.UUID
+    user_id: uuid.UUID
+
+    model_config = ConfigDict(from_attributes=True)
+
 class UserOut(UserBase):
     id: uuid.UUID
     is_active: bool
     must_change_password: bool
     created_at: datetime
     updated_at: datetime
+    addresses: list[AddressOut] | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
