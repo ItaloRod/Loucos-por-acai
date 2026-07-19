@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../hooks/redux';
-import { useRegisterMutation, useLoginMutation, useLazyGetMeQuery } from '../../features/auth/authApi';
+import {
+  useRegisterMutation,
+  useLoginMutation,
+  useLazyGetMeQuery,
+} from '../../features/auth/authApi';
 import { setCredentials } from '../../store/authSlice';
 import { Lock, Mail, Loader2, User as UserIcon, ShieldAlert, Phone } from 'lucide-react';
 
@@ -100,10 +104,11 @@ export const Register = () => {
 
       // 4. Redirecionar cliente
       navigate('/', { replace: true });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Falha no cadastro:', err);
-      if (err.data && err.data.detail) {
-        setErrorMsg(err.data.detail);
+      const apiErr = err as { data?: { detail?: string } };
+      if (apiErr.data && apiErr.data.detail) {
+        setErrorMsg(apiErr.data.detail);
       } else {
         setErrorMsg('Erro ao cadastrar conta. CPF ou E-mail já podem estar em uso.');
       }
@@ -134,7 +139,10 @@ export const Register = () => {
         <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="first_name" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
+              <label
+                htmlFor="first_name"
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1"
+              >
                 Nome *
               </label>
               <div className="relative">
@@ -156,7 +164,10 @@ export const Register = () => {
             </div>
 
             <div>
-              <label htmlFor="last_name" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
+              <label
+                htmlFor="last_name"
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1"
+              >
                 Sobrenome *
               </label>
               <div className="relative">
@@ -180,7 +191,10 @@ export const Register = () => {
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="cpf" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
+              <label
+                htmlFor="cpf"
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1"
+              >
                 CPF *
               </label>
               <div className="relative">
@@ -202,7 +216,10 @@ export const Register = () => {
             </div>
 
             <div>
-              <label htmlFor="phone" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
+              <label
+                htmlFor="phone"
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1"
+              >
                 Celular (Opcional)
               </label>
               <div className="relative">
@@ -224,7 +241,10 @@ export const Register = () => {
           </div>
 
           <div>
-            <label htmlFor="email" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
+            <label
+              htmlFor="email"
+              className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1"
+            >
               Endereço de E-mail *
             </label>
             <div className="relative">
@@ -247,7 +267,10 @@ export const Register = () => {
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="password" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
+              <label
+                htmlFor="password"
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1"
+              >
                 Senha *
               </label>
               <div className="relative">
@@ -269,7 +292,10 @@ export const Register = () => {
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
+              <label
+                htmlFor="confirmPassword"
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1"
+              >
                 Confirmar Senha *
               </label>
               <div className="relative">
@@ -297,11 +323,7 @@ export const Register = () => {
               disabled={isLoading}
               className="flex w-full justify-center rounded-xl bg-primary px-4 py-3.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 active:scale-[0.98] transition-all duration-200 disabled:opacity-60 disabled:pointer-events-none"
             >
-              {isLoading ? (
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              ) : (
-                'Cadastrar e Entrar'
-              )}
+              {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : 'Cadastrar e Entrar'}
             </button>
           </div>
         </form>

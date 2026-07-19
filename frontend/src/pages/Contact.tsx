@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, MessageSquare } from 'lucide-react';
+import { Mail, Phone, MapPin, Send } from 'lucide-react';
 
 export const Contact = () => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
@@ -20,7 +20,8 @@ export const Contact = () => {
         <span className="text-4xl">📞</span>
         <h2 className="text-3xl font-extrabold text-foreground tracking-tight">Fale Conosco</h2>
         <p className="text-muted-foreground text-sm max-w-xl mx-auto leading-relaxed">
-          Tem alguma dúvida, crítica, sugestão ou deseja fazer um pedido corporativo? Preencha o formulário abaixo ou fale direto pelo WhatsApp.
+          Tem alguma dúvida, crítica, sugestão ou deseja fazer um pedido corporativo? Preencha o
+          formulário abaixo ou fale direto pelo WhatsApp.
         </p>
       </div>
 
@@ -29,8 +30,10 @@ export const Contact = () => {
         <section className="bg-card border border-border p-8 rounded-2xl flex flex-col justify-between space-y-8 shadow-sm">
           <div className="space-y-6">
             <h3 className="text-lg font-bold text-foreground">Canais de Atendimento</h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">Estamos disponíveis de Segunda a Sábado das 13:00 às 22:00 para tirar suas dúvidas.</p>
-            
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Estamos disponíveis de Segunda a Sábado das 13:00 às 22:00 para tirar suas dúvidas.
+            </p>
+
             <div className="space-y-4">
               <div className="flex items-center gap-3.5">
                 <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
@@ -58,12 +61,14 @@ export const Contact = () => {
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground">Endereço da Loja</p>
-                  <p className="text-sm font-bold text-foreground leading-snug">Av. dos Açaizeiros, 123 - Centro, Fortaleza - CE</p>
+                  <p className="text-sm font-bold text-foreground leading-snug">
+                    Av. dos Açaizeiros, 123 - Centro, Fortaleza - CE
+                  </p>
                 </div>
               </div>
             </div>
           </div>
-          
+
           <div className="border-t border-border pt-4 text-xs text-muted-foreground">
             Loucos por Açaí 🍧 CNPJ: 00.000.000/0001-00
           </div>
@@ -75,8 +80,10 @@ export const Contact = () => {
             <div className="h-full flex flex-col items-center justify-center text-center space-y-4 py-8 animate-fadeIn">
               <span className="text-5xl">🎉</span>
               <h3 className="text-lg font-bold text-foreground">Mensagem Enviada!</h3>
-              <p className="text-xs text-muted-foreground max-w-xs">Agradecemos o contato. Nossa equipe retornará seu e-mail em até 24 horas.</p>
-              <button 
+              <p className="text-xs text-muted-foreground max-w-xs">
+                Agradecemos o contato. Nossa equipe retornará seu e-mail em até 24 horas.
+              </p>
+              <button
                 onClick={() => setSubmitted(false)}
                 className="px-4 py-2.5 rounded-lg bg-primary hover:bg-primary/95 text-primary-foreground text-xs font-semibold shadow-md"
               >
@@ -88,7 +95,10 @@ export const Contact = () => {
               <h3 className="text-lg font-bold text-foreground">Envie uma Mensagem</h3>
 
               <div>
-                <label htmlFor="name" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
+                <label
+                  htmlFor="name"
+                  className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1"
+                >
                   Seu Nome *
                 </label>
                 <input
@@ -103,7 +113,10 @@ export const Contact = () => {
               </div>
 
               <div>
-                <label htmlFor="email" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
+                <label
+                  htmlFor="email"
+                  className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1"
+                >
                   E-mail de Contato *
                 </label>
                 <input
@@ -118,7 +131,10 @@ export const Contact = () => {
               </div>
 
               <div>
-                <label htmlFor="message" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
+                <label
+                  htmlFor="message"
+                  className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1"
+                >
                   Sua Mensagem *
                 </label>
                 <textarea

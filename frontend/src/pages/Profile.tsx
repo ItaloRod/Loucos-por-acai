@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '../hooks/redux';
 import { setCredentials } from '../store/authSlice';
 import { useGetMeQuery } from '../features/auth/authApi';
-import { apiSlice } from '../store/apiSlice';
 import { User as UserIcon, Mail, ShieldAlert, Phone, Lock, Loader2, Save } from 'lucide-react';
 
 export const Profile = () => {
@@ -87,12 +86,13 @@ export const Profile = () => {
       dispatch(setCredentials(updatedUser));
       refetch(); // Recarregar dados via query RTK
       setMessage({ text: 'Seus dados foram atualizados com sucesso!', type: 'success' });
-      
+
       // Limpar campos de senha
-      setFormData(prev => ({ ...prev, password: '', confirmPassword: '' }));
-    } catch (err: any) {
+      setFormData((prev) => ({ ...prev, password: '', confirmPassword: '' }));
+    } catch (err: unknown) {
       console.error(err);
-      setMessage({ text: err.message || 'Falha ao atualizar perfil.', type: 'error' });
+      const message = err instanceof Error ? err.message : 'Falha ao atualizar perfil.';
+      setMessage({ text: message, type: 'error' });
     } finally {
       setIsUpdating(false);
     }
@@ -103,24 +103,35 @@ export const Profile = () => {
       {/* Intro */}
       <div className="space-y-2">
         <h2 className="text-3xl font-extrabold text-foreground tracking-tight">Meu Perfil</h2>
-        <p className="text-muted-foreground text-sm">Gerencie suas informações cadastrais e segurança da conta.</p>
+        <p className="text-muted-foreground text-sm">
+          Gerencie suas informações cadastrais e segurança da conta.
+        </p>
       </div>
 
       {message && (
-        <div className={`p-4 rounded-xl border text-sm font-medium ${message.type === 'success' ? 'bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-500' : 'bg-destructive/10 border-destructive/20 text-destructive'}`}>
+        <div
+          className={`p-4 rounded-xl border text-sm font-medium ${message.type === 'success' ? 'bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-500' : 'bg-destructive/10 border-destructive/20 text-destructive'}`}
+        >
           {message.text}
         </div>
       )}
 
       {/* Formulário do Perfil */}
-      <form onSubmit={handleSubmit} className="bg-card border border-border p-6 md:p-8 rounded-2xl shadow-sm space-y-6">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-card border border-border p-6 md:p-8 rounded-2xl shadow-sm space-y-6"
+      >
         <div className="space-y-4">
-          <h3 className="font-bold text-base text-foreground border-b border-border/50 pb-2">Informações Cadastrais</h3>
+          <h3 className="font-bold text-base text-foreground border-b border-border/50 pb-2">
+            Informações Cadastrais
+          </h3>
 
           {/* CPF e E-mail (Apenas leitura por convenção de segurança) */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">CPF (Não alterável)</span>
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
+                CPF (Não alterável)
+              </span>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground/50">
                   <ShieldAlert size={18} />
@@ -136,7 +147,9 @@ export const Profile = () => {
             </div>
 
             <div>
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">E-mail (Não alterável)</span>
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
+                E-mail (Não alterável)
+              </span>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground/50">
                   <Mail size={18} />
@@ -155,7 +168,12 @@ export const Profile = () => {
           {/* Nome e Sobrenome */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="first_name" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">Nome *</label>
+              <label
+                htmlFor="first_name"
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1"
+              >
+                Nome *
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground">
                   <UserIcon size={18} />
@@ -174,7 +192,12 @@ export const Profile = () => {
             </div>
 
             <div>
-              <label htmlFor="last_name" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">Sobrenome *</label>
+              <label
+                htmlFor="last_name"
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1"
+              >
+                Sobrenome *
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground">
                   <UserIcon size={18} />
@@ -195,7 +218,12 @@ export const Profile = () => {
 
           {/* Telefone */}
           <div>
-            <label htmlFor="phone" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">Celular</label>
+            <label
+              htmlFor="phone"
+              className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1"
+            >
+              Celular
+            </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground">
                 <Phone size={18} />
@@ -216,10 +244,15 @@ export const Profile = () => {
 
         <div className="space-y-4 pt-4 border-t border-border/50">
           <h3 className="font-bold text-base text-foreground pb-2">Segurança (Opcional)</h3>
-          
+
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="password" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">Nova Senha</label>
+              <label
+                htmlFor="password"
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1"
+              >
+                Nova Senha
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground">
                   <Lock size={18} />
@@ -238,7 +271,12 @@ export const Profile = () => {
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">Confirmar Nova Senha</label>
+              <label
+                htmlFor="confirmPassword"
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1"
+              >
+                Confirmar Nova Senha
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground">
                   <Lock size={18} />

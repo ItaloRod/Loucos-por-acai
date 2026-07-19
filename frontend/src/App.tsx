@@ -25,7 +25,8 @@ const PlaceholderPage = ({ title }: { title: string }) => (
     <span className="text-5xl">🛠️</span>
     <h2 className="text-xl font-extrabold text-foreground tracking-tight">{title}</h2>
     <p className="text-sm text-muted-foreground leading-relaxed">
-      Esta funcionalidade está planejada para as próximas etapas do plano de desenvolvimento (Fases 3 a 10).
+      Esta funcionalidade está planejada para as próximas etapas do plano de desenvolvimento (Fases
+      3 a 10).
     </p>
   </div>
 );
@@ -43,7 +44,7 @@ const AppInitializer = ({ children }: { children: React.ReactNode }) => {
         // Tentar obter o perfil do usuário logado via cookies httpOnly
         const user = await triggerGetMe().unwrap();
         dispatch(setCredentials(user));
-      } catch (error) {
+      } catch {
         // Sem sessão ativa ou token expirado
         dispatch(logOut());
       } finally {
@@ -59,10 +60,15 @@ const AppInitializer = ({ children }: { children: React.ReactNode }) => {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" role="status">
+          <div
+            className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"
+            role="status"
+          >
             <span className="sr-only">Inicializando...</span>
           </div>
-          <p className="text-sm font-semibold text-primary/70 animate-pulse">Iniciando Loucos por Açaí...</p>
+          <p className="text-sm font-semibold text-primary/70 animate-pulse">
+            Iniciando Loucos por Açaí...
+          </p>
         </div>
       </div>
     );
@@ -78,13 +84,19 @@ function AppContent() {
     <BrowserRouter>
       <Routes>
         {/* Rotas de Autenticação */}
-        <Route 
-          path="/login" 
-          element={isAuthenticated ? <Navigate to={user?.role === 'CLIENTE' ? '/' : '/dashboard'} replace /> : <Login />} 
+        <Route
+          path="/login"
+          element={
+            isAuthenticated ? (
+              <Navigate to={user?.role === 'CLIENTE' ? '/' : '/dashboard'} replace />
+            ) : (
+              <Login />
+            )
+          }
         />
-        <Route 
-          path="/register" 
-          element={isAuthenticated ? <Navigate to="/" replace /> : <Register />} 
+        <Route
+          path="/register"
+          element={isAuthenticated ? <Navigate to="/" replace /> : <Register />}
         />
 
         {/* Área do App com Layout Sidebar/Header */}
@@ -103,21 +115,39 @@ function AppContent() {
           {/* Rotas Protegidas de CLIENTE */}
           <Route element={<ProtectedRoute allowedRoles={['CLIENTE']} />}>
             <Route path="/loyalty" element={<Loyalty />} />
-            <Route path="/orders/history" element={<PlaceholderPage title="Histórico de Pedidos do Cliente" />} />
+            <Route
+              path="/orders/history"
+              element={<PlaceholderPage title="Histórico de Pedidos do Cliente" />}
+            />
           </Route>
 
           {/* Rotas Protegidas de FUNCIONARIO & GERENTE (Operação de Vendas) */}
           <Route element={<ProtectedRoute allowedRoles={['GERENTE', 'FUNCIONARIO']} />}>
-            <Route path="/pos" element={<PlaceholderPage title="Frente de Caixa / PDV (Ponto de Venda)" />} />
-            <Route path="/admin/orders" element={<PlaceholderPage title="Painel de Pedidos Ativos" />} />
-            <Route path="/admin/customers" element={<PlaceholderPage title="Gerenciamento de Clientes" />} />
+            <Route
+              path="/pos"
+              element={<PlaceholderPage title="Frente de Caixa / PDV (Ponto de Venda)" />}
+            />
+            <Route
+              path="/admin/orders"
+              element={<PlaceholderPage title="Painel de Pedidos Ativos" />}
+            />
+            <Route
+              path="/admin/customers"
+              element={<PlaceholderPage title="Gerenciamento de Clientes" />}
+            />
           </Route>
 
           {/* Rotas Protegidas de GERENTE (Administração Geral) */}
           <Route element={<ProtectedRoute allowedRoles={['GERENTE']} />}>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/admin/products" element={<PlaceholderPage title="Gerenciamento de Estoque & Produtos" />} />
-            <Route path="/admin/employees" element={<PlaceholderPage title="Gerenciamento de Funcionários" />} />
+            <Route
+              path="/admin/products"
+              element={<PlaceholderPage title="Gerenciamento de Estoque & Produtos" />}
+            />
+            <Route
+              path="/admin/employees"
+              element={<PlaceholderPage title="Gerenciamento de Funcionários" />}
+            />
           </Route>
         </Route>
 

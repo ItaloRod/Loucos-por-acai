@@ -1,9 +1,6 @@
-import { Award, Check, Sparkles, AlertCircle } from 'lucide-react';
-import { useAppSelector } from '../hooks/redux';
+import { Award, Check, AlertCircle } from 'lucide-react';
 
 export const Loyalty = () => {
-  const { user } = useAppSelector((state) => state.auth);
-
   // Selos simulados de teste para a Fase 2 (em fases posteriores virá do backend via RTK Query)
   const currentStamps = 6;
   const totalSlots = 10;
@@ -12,8 +9,12 @@ export const Loyalty = () => {
     <div className="space-y-8 pb-12 max-w-2xl mx-auto">
       {/* Intro */}
       <div className="space-y-2">
-        <h2 className="text-3xl font-extrabold text-foreground tracking-tight">Programa Fidelidade</h2>
-        <p className="text-muted-foreground text-sm">Acumule selos em suas compras e troque por descontos deliciosos!</p>
+        <h2 className="text-3xl font-extrabold text-foreground tracking-tight">
+          Programa Fidelidade
+        </h2>
+        <p className="text-muted-foreground text-sm">
+          Acumule selos em suas compras e troque por descontos deliciosos!
+        </p>
       </div>
 
       {/* Cartão de Selos Premium */}
@@ -21,14 +22,16 @@ export const Loyalty = () => {
         <div className="absolute -right-8 -top-8 text-9xl text-primary/5 select-none pointer-events-none font-bold">
           10
         </div>
-        
+
         <div className="space-y-6 relative z-10">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <h3 className="font-extrabold text-xl text-foreground flex items-center gap-1.5">
                 <Award className="text-yellow-500" size={24} /> Meu Cartão Fidelidade
               </h3>
-              <p className="text-xs text-muted-foreground">Cada selo aproxima você de um açaí grátis!</p>
+              <p className="text-xs text-muted-foreground">
+                Cada selo aproxima você de um açaí grátis!
+              </p>
             </div>
             <span className="font-extrabold text-sm bg-primary/10 text-primary px-3 py-1 rounded-full">
               {currentStamps} / {totalSlots} Selos
@@ -62,14 +65,16 @@ export const Loyalty = () => {
           {/* Progress Bar e Regra */}
           <div className="space-y-2 pt-2">
             <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-              <div 
+              <div
                 className="h-full bg-gradient-to-r from-primary to-purple-600 rounded-full transition-all duration-500"
                 style={{ width: `${(currentStamps / totalSlots) * 100}%` }}
               />
             </div>
             <div className="flex items-center justify-between text-[11px] text-muted-foreground">
               <span>{currentStamps} selos acumulados</span>
-              <span className="font-semibold text-primary">{totalSlots - currentStamps} restantes para resgate</span>
+              <span className="font-semibold text-primary">
+                {totalSlots - currentStamps} restantes para resgate
+              </span>
             </div>
           </div>
         </div>
@@ -81,10 +86,22 @@ export const Loyalty = () => {
           <AlertCircle size={16} className="text-primary" /> Regras do Programa
         </h4>
         <ul className="text-xs text-muted-foreground space-y-2.5 list-disc list-inside leading-relaxed pl-1">
-          <li>A cada <strong>R$ 20,00</strong> gastos em uma única compra (Delivery, Retirada ou Balcão), você ganha <strong>1 selo</strong>.</li>
-          <li>Ao completar o cartão com <strong>10 selos</strong>, você poderá resgatar um desconto especial de <strong>R$ 20,00</strong> na sua próxima compra.</li>
-          <li>Os selos são adicionados automaticamente em sua conta ao finalizar um pedido autenticado com seu CPF.</li>
-          <li>O resgate pode ser realizado no checkout do carrinho de compras do site ou diretamente no caixa físico informando seu CPF cadastrado.</li>
+          <li>
+            A cada <strong>R$ 20,00</strong> gastos em uma única compra (Delivery, Retirada ou
+            Balcão), você ganha <strong>1 selo</strong>.
+          </li>
+          <li>
+            Ao completar o cartão com <strong>10 selos</strong>, você poderá resgatar um desconto
+            especial de <strong>R$ 20,00</strong> na sua próxima compra.
+          </li>
+          <li>
+            Os selos são adicionados automaticamente em sua conta ao finalizar um pedido autenticado
+            com seu CPF.
+          </li>
+          <li>
+            O resgate pode ser realizado no checkout do carrinho de compras do site ou diretamente
+            no caixa físico informando seu CPF cadastrado.
+          </li>
         </ul>
       </section>
     </div>

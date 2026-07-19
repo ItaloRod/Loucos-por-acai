@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Utensils, Award, Plus, Sparkles } from 'lucide-react';
+import { Utensils, Plus, Sparkles } from 'lucide-react';
 
 interface MockProduct {
   id: string;
@@ -16,14 +16,70 @@ export const Menu = () => {
 
   // Produtos simulados para exibição estática da Fase 2
   const mockProducts: MockProduct[] = [
-    { id: '1', name: 'Copo Açaí Tradicional 300ml', price: 12.00, description: 'Açaí cremoso batido na hora, perfeito para matar a fome.', category: 'bases', isBase: true },
-    { id: '2', name: 'Copo Açaí Tradicional 500ml', price: 18.00, description: 'Nosso tamanho mais pedido! Ideal para combinar com vários toppings.', category: 'bases', isBase: true },
-    { id: '3', name: 'Tigela Açaí Premium 700ml', price: 24.00, description: 'Super tigela de açaí cremoso para os verdadeiros loucos por açaí.', category: 'bases', isBase: true },
-    { id: '4', name: 'Leite em Pó', price: 2.00, description: 'Leite em pó Ninho de altíssima qualidade.', category: 'toppings', isBase: false },
-    { id: '5', name: 'Leite Condensado Moça', price: 2.50, description: 'Creme de leite condensado Moça original bem cremoso.', category: 'toppings', isBase: false },
-    { id: '6', name: 'Granola Especial', price: 2.00, description: 'Granola crocante com castanhas e banana desidratada.', category: 'toppings', isBase: false },
-    { id: '7', name: 'Paçoca Esfarelada', price: 1.50, description: 'Paçoca de amendoim esfarelada.', category: 'toppings', isBase: false },
-    { id: '8', name: 'Suco Natural de Laranja', price: 7.00, description: 'Espremido na hora com laranjas frescas selecionadas.', category: 'bebidas', isBase: false },
+    {
+      id: '1',
+      name: 'Copo Açaí Tradicional 300ml',
+      price: 12.0,
+      description: 'Açaí cremoso batido na hora, perfeito para matar a fome.',
+      category: 'bases',
+      isBase: true,
+    },
+    {
+      id: '2',
+      name: 'Copo Açaí Tradicional 500ml',
+      price: 18.0,
+      description: 'Nosso tamanho mais pedido! Ideal para combinar com vários toppings.',
+      category: 'bases',
+      isBase: true,
+    },
+    {
+      id: '3',
+      name: 'Tigela Açaí Premium 700ml',
+      price: 24.0,
+      description: 'Super tigela de açaí cremoso para os verdadeiros loucos por açaí.',
+      category: 'bases',
+      isBase: true,
+    },
+    {
+      id: '4',
+      name: 'Leite em Pó',
+      price: 2.0,
+      description: 'Leite em pó Ninho de altíssima qualidade.',
+      category: 'toppings',
+      isBase: false,
+    },
+    {
+      id: '5',
+      name: 'Leite Condensado Moça',
+      price: 2.5,
+      description: 'Creme de leite condensado Moça original bem cremoso.',
+      category: 'toppings',
+      isBase: false,
+    },
+    {
+      id: '6',
+      name: 'Granola Especial',
+      price: 2.0,
+      description: 'Granola crocante com castanhas e banana desidratada.',
+      category: 'toppings',
+      isBase: false,
+    },
+    {
+      id: '7',
+      name: 'Paçoca Esfarelada',
+      price: 1.5,
+      description: 'Paçoca de amendoim esfarelada.',
+      category: 'toppings',
+      isBase: false,
+    },
+    {
+      id: '8',
+      name: 'Suco Natural de Laranja',
+      price: 7.0,
+      description: 'Espremido na hora com laranjas frescas selecionadas.',
+      category: 'bebidas',
+      isBase: false,
+    },
   ];
 
   const categories = [
@@ -33,16 +89,19 @@ export const Menu = () => {
     { id: 'bebidas', label: 'Bebidas' },
   ];
 
-  const filteredProducts = selectedCategory === 'todos' 
-    ? mockProducts 
-    : mockProducts.filter(p => p.category === selectedCategory);
+  const filteredProducts =
+    selectedCategory === 'todos'
+      ? mockProducts
+      : mockProducts.filter((p) => p.category === selectedCategory);
 
   return (
     <div className="space-y-8 pb-12">
       {/* Intro */}
       <div className="space-y-2">
         <h2 className="text-3xl font-extrabold text-foreground tracking-tight">Nosso Cardápio</h2>
-        <p className="text-muted-foreground text-sm max-w-lg">Navegue pelas nossas opções deliciosas. Monte o açaí da sua maneira!</p>
+        <p className="text-muted-foreground text-sm max-w-lg">
+          Navegue pelas nossas opções deliciosas. Monte o açaí da sua maneira!
+        </p>
       </div>
 
       {/* Filtros de Categoria */}
@@ -97,7 +156,7 @@ export const Menu = () => {
                 <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground flex items-center gap-1 bg-muted px-2 py-1 rounded">
                   <Utensils size={10} /> {product.category}
                 </span>
-                
+
                 <button
                   type="button"
                   className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-primary hover:bg-primary/95 text-primary-foreground text-xs font-bold transition-all duration-200 active:scale-95 shadow-sm"

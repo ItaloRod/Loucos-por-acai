@@ -1,4 +1,4 @@
-import { UserRole } from '../../store/authSlice';
+import type { UserRole } from '../../store/authSlice';
 
 export interface LoginPayload {
   email: string;
@@ -7,7 +7,7 @@ export interface LoginPayload {
 
 export interface RegisterPayload {
   email: string;
-  password:  string;
+  password: string;
   first_name: string;
   last_name: string;
   cpf: string;

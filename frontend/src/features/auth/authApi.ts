@@ -1,6 +1,6 @@
 import { apiSlice } from '../../store/apiSlice';
-import { User } from '../../store/authSlice';
-import { LoginPayload, RegisterPayload, TokenResponse } from './types';
+import type { User } from '../../store/authSlice';
+import type { LoginPayload, RegisterPayload, TokenResponse } from './types';
 
 export const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

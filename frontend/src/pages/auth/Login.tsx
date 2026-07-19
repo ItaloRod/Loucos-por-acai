@@ -40,12 +40,13 @@ export const Login = () => {
       } else {
         navigate('/dashboard', { replace: true });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Falha no login:', err);
-      if (err.status === 429) {
+      const apiErr = err as { status?: number; data?: { detail?: string } };
+      if (apiErr.status === 429) {
         setErrorMsg('Muitas tentativas! Por favor, aguarde um minuto e tente novamente.');
-      } else if (err.data && err.data.detail) {
-        setErrorMsg(err.data.detail);
+      } else if (apiErr.data && apiErr.data.detail) {
+        setErrorMsg(apiErr.data.detail);
       } else {
         setErrorMsg('Falha ao conectar-se ao servidor. Tente novamente mais tarde.');
       }
@@ -62,9 +63,7 @@ export const Login = () => {
           <h2 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
             Bem-vindo de volta!
           </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Acesse sua conta do Loucos por Açaí
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">Acesse sua conta do Loucos por Açaí</p>
         </div>
 
         {errorMsg && (
@@ -76,7 +75,10 @@ export const Login = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="email-address" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
+              <label
+                htmlFor="email-address"
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1"
+              >
                 Endereço de E-mail
               </label>
               <div className="relative">
@@ -99,7 +101,10 @@ export const Login = () => {
             </div>
 
             <div>
-              <label htmlFor="password" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
+              <label
+                htmlFor="password"
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1"
+              >
                 Senha
               </label>
               <div className="relative">

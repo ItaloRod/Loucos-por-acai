@@ -3,20 +3,20 @@ import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { useLogoutMutation } from '../features/auth/authApi';
 import { logOut } from '../store/authSlice';
-import { 
-  Menu as MenuIcon, 
-  X, 
-  LogOut, 
-  User as UserIcon, 
-  LayoutDashboard, 
-  ShoppingBag, 
-  Users, 
-  Package, 
-  Calendar, 
-  Award, 
+import {
+  Menu as MenuIcon,
+  X,
+  LogOut,
+  User as UserIcon,
+  LayoutDashboard,
+  ShoppingBag,
+  Users,
+  Package,
+  Calendar,
+  Award,
   History,
   Home,
-  UtensilsCrossed
+  UtensilsCrossed,
 } from 'lucide-react';
 
 interface SidebarLink {
@@ -32,7 +32,7 @@ export const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [logoutApi] = useLogoutMutation();
-  
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -53,21 +53,56 @@ export const Layout = () => {
     { to: '/', label: 'Início', icon: <Home size={20} />, roles: ['CLIENTE'] },
     { to: '/menu', label: 'Cardápio', icon: <UtensilsCrossed size={20} />, roles: ['CLIENTE'] },
     { to: '/loyalty', label: 'Fidelidade', icon: <Award size={20} />, roles: ['CLIENTE'] },
-    { to: '/orders/history', label: 'Meus Pedidos', icon: <History size={20} />, roles: ['CLIENTE'] },
+    {
+      to: '/orders/history',
+      label: 'Meus Pedidos',
+      icon: <History size={20} />,
+      roles: ['CLIENTE'],
+    },
     { to: '/profile', label: 'Meu Perfil', icon: <UserIcon size={20} />, roles: ['CLIENTE'] },
 
     // Links para Funcionários & Gerentes (Área de Gestão/Operação)
-    { to: '/dashboard', label: 'Painel Geral', icon: <LayoutDashboard size={20} />, roles: ['GERENTE'] },
-    { to: '/pos', label: 'Atendimento (PDV)', icon: <ShoppingBag size={20} />, roles: ['GERENTE', 'FUNCIONARIO'] },
-    { to: '/admin/orders', label: 'Pedidos Ativos', icon: <Calendar size={20} />, roles: ['GERENTE', 'FUNCIONARIO'] },
-    { to: '/admin/customers', label: 'Clientes', icon: <Users size={20} />, roles: ['GERENTE', 'FUNCIONARIO'] },
-    { to: '/admin/products', label: 'Estoque / Produtos', icon: <Package size={20} />, roles: ['GERENTE'] },
-    { to: '/admin/employees', label: 'Funcionários', icon: <Users size={20} />, roles: ['GERENTE'] },
+    {
+      to: '/dashboard',
+      label: 'Painel Geral',
+      icon: <LayoutDashboard size={20} />,
+      roles: ['GERENTE'],
+    },
+    {
+      to: '/pos',
+      label: 'Atendimento (PDV)',
+      icon: <ShoppingBag size={20} />,
+      roles: ['GERENTE', 'FUNCIONARIO'],
+    },
+    {
+      to: '/admin/orders',
+      label: 'Pedidos Ativos',
+      icon: <Calendar size={20} />,
+      roles: ['GERENTE', 'FUNCIONARIO'],
+    },
+    {
+      to: '/admin/customers',
+      label: 'Clientes',
+      icon: <Users size={20} />,
+      roles: ['GERENTE', 'FUNCIONARIO'],
+    },
+    {
+      to: '/admin/products',
+      label: 'Estoque / Produtos',
+      icon: <Package size={20} />,
+      roles: ['GERENTE'],
+    },
+    {
+      to: '/admin/employees',
+      label: 'Funcionários',
+      icon: <Users size={20} />,
+      roles: ['GERENTE'],
+    },
   ];
 
   // Filtra links baseados no papel do usuário
   const filteredLinks = sidebarLinks.filter(
-    (link) => !link.roles || (user && link.roles.includes(user.role))
+    (link) => !link.roles || (user && link.roles.includes(user.role)),
   );
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
@@ -75,7 +110,9 @@ export const Layout = () => {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar para desktop */}
-      <aside className={`fixed inset-y-0 left-0 z-40 w-64 transform bg-card border-r border-border transition-transform duration-300 md:translate-x-0 md:static md:inset-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 w-64 transform bg-card border-r border-border transition-transform duration-300 md:translate-x-0 md:static md:inset-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      >
         <div className="flex h-16 items-center justify-between px-6 border-b border-border bg-primary/5">
           <Link to="/" className="flex items-center gap-2">
             <span className="text-2xl">🍧</span>
@@ -83,7 +120,11 @@ export const Layout = () => {
               Loucos por Açaí
             </span>
           </Link>
-          <button onClick={toggleSidebar} className="p-1 rounded-md hover:bg-muted md:hidden" aria-label="Fechar barra lateral">
+          <button
+            onClick={toggleSidebar}
+            className="p-1 rounded-md hover:bg-muted md:hidden"
+            aria-label="Fechar barra lateral"
+          >
             <X size={20} />
           </button>
         </div>
@@ -132,7 +173,11 @@ export const Layout = () => {
         {/* Header */}
         <header className="flex h-16 items-center justify-between px-6 border-b border-border bg-card">
           <div className="flex items-center gap-4">
-            <button onClick={toggleSidebar} className="p-2 rounded-lg hover:bg-muted md:hidden" aria-label="Abrir barra lateral">
+            <button
+              onClick={toggleSidebar}
+              className="p-2 rounded-lg hover:bg-muted md:hidden"
+              aria-label="Abrir barra lateral"
+            >
               <MenuIcon size={20} />
             </button>
             <h1 className="text-base font-semibold text-foreground md:text-lg">

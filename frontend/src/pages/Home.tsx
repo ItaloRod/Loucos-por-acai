@@ -17,7 +17,8 @@ export const Home = () => {
             Monte o seu Açaí Perfeito e receba onde estiver!
           </h1>
           <p className="text-purple-100/90 text-sm md:text-base leading-relaxed max-w-xl">
-            Escolha seu tamanho favorito, acompanhamentos frescos e deliciosas caldas. Acumule selos em nosso programa de fidelidade a cada pedido!
+            Escolha seu tamanho favorito, acompanhamentos frescos e deliciosas caldas. Acumule selos
+            em nosso programa de fidelidade a cada pedido!
           </p>
           <div className="flex flex-wrap gap-4 pt-4">
             <Link
@@ -37,7 +38,7 @@ export const Home = () => {
             )}
           </div>
         </div>
-        
+
         {/* Decorativo de fundo */}
         <div className="absolute right-0 bottom-0 top-0 opacity-10 md:opacity-20 flex items-center justify-center text-[12rem] md:text-[20rem] select-none pointer-events-none pr-8">
           🍧
@@ -52,9 +53,14 @@ export const Home = () => {
           </div>
           <div>
             <h3 className="font-bold text-lg text-foreground">Cardápio Variado</h3>
-            <p className="text-sm text-muted-foreground mt-1">Navegue pelas opções de potes, copos, toppings adicionais e bebidas.</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Navegue pelas opções de potes, copos, toppings adicionais e bebidas.
+            </p>
           </div>
-          <Link to="/menu" className="text-sm font-semibold text-primary inline-flex items-center gap-1 hover:underline">
+          <Link
+            to="/menu"
+            className="text-sm font-semibold text-primary inline-flex items-center gap-1 hover:underline"
+          >
             Ver Cardápio <ArrowRight size={14} />
           </Link>
         </div>
@@ -65,9 +71,14 @@ export const Home = () => {
           </div>
           <div>
             <h3 className="font-bold text-lg text-foreground">Cartão Fidelidade</h3>
-            <p className="text-sm text-muted-foreground mt-1">A cada R$ 20 em compras você ganha 1 selo. Junte 10 selos e ganhe R$ 20 de desconto!</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              A cada R$ 20 em compras você ganha 1 selo. Junte 10 selos e ganhe R$ 20 de desconto!
+            </p>
           </div>
-          <Link to="/loyalty" className="text-sm font-semibold text-primary inline-flex items-center gap-1 hover:underline">
+          <Link
+            to="/loyalty"
+            className="text-sm font-semibold text-primary inline-flex items-center gap-1 hover:underline"
+          >
             Acessar Selos <ArrowRight size={14} />
           </Link>
         </div>
@@ -78,7 +89,9 @@ export const Home = () => {
           </div>
           <div>
             <h3 className="font-bold text-lg text-foreground">Horário de Funcionamento</h3>
-            <p className="text-sm text-muted-foreground mt-1">Segunda a Sábado, das 13:00 às 22:00. Domingos fechados.</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Segunda a Sábado, das 13:00 às 22:00. Domingos fechados.
+            </p>
           </div>
           <span className="text-xs font-semibold px-2.5 py-1 rounded bg-green-500/10 text-green-600 dark:text-green-500 self-start">
             Loja Aberta
