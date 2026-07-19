@@ -9,6 +9,7 @@ interface AcaiBuilderModalProps {
   baseProductId: string;
   baseProductName: string;
   baseProductPrice: number;
+  onAddToCart?: (item: { product_id: string; quantity: number; options_selected: string[]; notes?: string }) => void;
 }
 
 export const AcaiBuilderModal = ({
@@ -17,6 +18,7 @@ export const AcaiBuilderModal = ({
   baseProductId,
   baseProductName,
   baseProductPrice,
+  onAddToCart: externalOnAddToCart,
 }: AcaiBuilderModalProps) => {
   const { data: productsData, isLoading } = useGetProductsQuery();
   const [addToCart, { isLoading: isAdding }] = useAddToCartMutation();
@@ -52,13 +54,21 @@ export const AcaiBuilderModal = ({
   };
 
   const handleAddToCart = async () => {
+    const payload = {
+      product_id: baseProductId,
+      quantity,
+      options_selected: selectedToppings,
+      notes: notes || undefined,
+    };
+
+    if (externalOnAddToCart) {
+      externalOnAddToCart(payload);
+      onClose();
+      return;
+    }
+
     try {
-      await addToCart({
-        product_id: baseProductId,
-        quantity,
-        options_selected: selectedToppings,
-        notes: notes || undefined,
-      }).unwrap();
+      await addToCart(payload).unwrap();
       onClose();
     } catch (err) {
       console.error('Falha ao adicionar ao carrinho:', err);

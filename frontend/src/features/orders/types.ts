@@ -49,11 +49,22 @@ export interface OrderOut {
   items: OrderItemOut[];
 }
 
+export interface OrderItemCreate {
+  product_id: string;
+  quantity: number;
+  options_selected?: string[];
+  notes?: string;
+}
+
 export interface OrderCreate {
   order_type: OrderType;
+  items: OrderItemCreate[];
   delivery_address_id?: string;
   apply_stamps_discount: boolean;
-  payment_method?: string; // Informational for front end, backend might use it
+  payment_method: string;
+  customer_id?: string;
+  cash_tendered?: number;
+  change_due?: number;
 }
 
 export interface OrderStatusUpdate {

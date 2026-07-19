@@ -14,6 +14,10 @@ export const customersApi = apiSlice.injectEndpoints({
       query: (id) => `/customers/${id}`,
       providesTags: ['User'],
     }),
+    getCustomerByCpf: builder.query<Customer, string>({
+      query: (cpf) => `/customers/cpf/${cpf}`,
+      providesTags: ['User', 'Loyalty'],
+    }),
     updateCustomer: builder.mutation<Customer, { id: string; body: CustomerUpdatePayload }>({
       query: ({ id, body }) => ({
         url: `/customers/${id}`,
@@ -28,5 +32,7 @@ export const customersApi = apiSlice.injectEndpoints({
 export const {
   useGetCustomersQuery,
   useGetCustomerByIdQuery,
+  useGetCustomerByCpfQuery,
+  useLazyGetCustomerByCpfQuery,
   useUpdateCustomerMutation,
 } = customersApi;

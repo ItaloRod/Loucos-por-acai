@@ -25,6 +25,7 @@ import { Checkout } from './pages/Checkout';
 import { OrderTracking } from './pages/OrderTracking';
 import { OrderHistory } from './pages/OrderHistory';
 import { OrdersAdmin } from './pages/admin/OrdersAdmin';
+import POS from './pages/POS';
 
 // Placeholder para rotas das fases subsequentes
 const PlaceholderPage = ({ title }: { title: string }) => (
@@ -129,10 +130,7 @@ function AppContent() {
 
           {/* Rotas Protegidas de FUNCIONARIO & GERENTE (Operação de Vendas) */}
           <Route element={<ProtectedRoute allowedRoles={['GERENTE', 'FUNCIONARIO']} />}>
-            <Route
-              path="/pos"
-              element={<PlaceholderPage title="Frente de Caixa / PDV (Ponto de Venda)" />}
-            />
+            <Route path="/pos" element={<POS />} />
             <Route path="/admin/orders" element={<OrdersAdmin />} />
             <Route path="/admin/customers" element={<Customers />} />
           </Route>
