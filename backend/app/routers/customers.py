@@ -79,6 +79,40 @@ def get_customer(
     return customer
 
 
+def normalize_cpf(cpf: str) -> str:
+    # Remove non-digits
+    digits = "".join(char for char in cpf if char.isdigit())
+    if len(digits) == 11:
+        return f"{digits[0:3]}.{digits[3:6]}.{digits[6:9]}-{digits[9:11]}"
+    return cpf
+
+
+@router.get("/cpf/{cpf}", response_model=CustomerOut)
+def get_customer_by_cpf(
+    cpf: str,
+    db: Session = Depends(get_db),
+    admin_user: User = Depends(RequireRole(UserRole.FUNCIONARIO, UserRole.GERENTE))
+):
+    """
+    Busca um CLIENTE por CPF (normalizando formatação com pontos e traço).
+    Acesso restrito a FUNCIONARIO e GERENTE.
+    """
+    normalized = normalize_cpf(cpf)
+    customer = (
+        db.query(User)
+        .options(joinedload(User.stamp_card))
+        .filter(User.cpf == normalized, User.role == UserRole.CLIENTE)
+        .first()
+    )
+    if not customer:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Cliente não encontrado."
+        )
+    return customer
+
+
+
 @router.put("/{id}", response_model=CustomerOut)
 def update_customer(
     id: uuid.UUID,

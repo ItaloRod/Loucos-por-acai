@@ -23,6 +23,9 @@ def serialize_order(order: Order) -> dict:
         "employee_id": order.employee_id,
         "status": order.status,
         "order_type": order.order_type,
+        "payment_method": order.payment_method,
+        "cash_tendered": order.cash_tendered,
+        "change_due": order.change_due,
         "subtotal": order.subtotal,
         "discount": order.discount,
         "total": order.total,
@@ -271,6 +274,34 @@ def create_order(
 
     total = max(subtotal - discount, Decimal("0.00"))
 
+    # Validate cash tender and change due if CASH
+    cash_tendered = payload.cash_tendered
+    change_due = payload.change_due
+
+    if payload.payment_method.upper() == "CASH":
+        if cash_tendered is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="cash_tendered é obrigatório para pagamentos em dinheiro."
+            )
+        if cash_tendered < total:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Valor pago (cash_tendered) é insuficiente."
+            )
+        calculated_change = cash_tendered - total
+        if change_due is not None:
+            if abs(change_due - calculated_change) > Decimal("0.01"):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Troco incorreto. Calculado: {calculated_change}, Recebido: {change_due}"
+                )
+        else:
+            change_due = calculated_change
+    else:
+        cash_tendered = None
+        change_due = None
+
     # 7. Create Order
     order_number = f"PED-{datetime.now().strftime('%Y%m%d%H%M%S')}-{random.randint(1000, 9999)}"
     initial_status = OrderStatus.PREPARING if payload.order_type == OrderType.POS else OrderStatus.PENDING
@@ -281,6 +312,9 @@ def create_order(
         employee_id=current_user.id if current_user.role in [UserRole.FUNCIONARIO, UserRole.GERENTE] else None,
         status=initial_status,
         order_type=payload.order_type,
+        payment_method=payload.payment_method,
+        cash_tendered=cash_tendered,
+        change_due=change_due,
         subtotal=subtotal,
         discount=discount,
         total=total,

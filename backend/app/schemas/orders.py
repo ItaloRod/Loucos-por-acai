@@ -18,6 +18,8 @@ class OrderCreate(BaseModel):
     payment_method: str = Field(..., max_length=50)
     apply_stamps_discount: bool = False
     customer_id: uuid.UUID | None = None
+    cash_tendered: Decimal | None = None
+    change_due: Decimal | None = None
 
     @model_validator(mode="after")
     def validate_delivery_address(self):
@@ -54,6 +56,9 @@ class OrderOut(BaseModel):
     employee_id: uuid.UUID | None
     status: OrderStatus
     order_type: OrderType
+    payment_method: str | None = None
+    cash_tendered: Decimal | None = None
+    change_due: Decimal | None = None
     subtotal: Decimal
     discount: Decimal
     total: Decimal

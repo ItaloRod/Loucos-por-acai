@@ -5,5 +5,7 @@ from app.routers.customers import router as customers_router
 from app.routers.employees import router as employees_router
 from app.routers.cart import router as cart_router
 from app.routers.orders import router as orders_router
+from app.routers.sales import router as sales_router
+
 
 
