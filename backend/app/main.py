@@ -1,13 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_remote_address
 
 from app.config import settings
-
-# Inicializa o rate limiter baseado em IP
-limiter = Limiter(key_func=get_remote_address)
+from app.core.limiter import limiter
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -28,6 +25,13 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+# Importação e registro de roteadores
+from app.routers import auth_router, users_router, catalog_router
+
+app.include_router(auth_router, prefix=settings.API_V1_STR)
+app.include_router(users_router, prefix=settings.API_V1_STR)
+app.include_router(catalog_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 def read_root():
