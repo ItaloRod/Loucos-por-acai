@@ -11,3 +11,6 @@ from app.schemas.catalog import (
     InventoryUpdate,
     InventoryOut,
 )
+
+from app.schemas.cart import CartItemCreate, CartItemUpdate, CartItemOut, CartOut
+from app.schemas.orders import OrderItemCreate, OrderCreate, OrderStatusUpdate, OrderCancelRequest, OrderItemOut, OrderOut
