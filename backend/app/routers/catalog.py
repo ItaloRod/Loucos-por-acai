@@ -1,8 +1,10 @@
 import uuid
+import os
+import shutil
 from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from app.database import get_db
 from app.core.auth import get_current_user, RequireRole
 from app.models.user import User, UserRole
@@ -10,7 +12,7 @@ from app.models.product import Category, Product, Inventory
 from app.schemas.catalog import (
     CategoryCreate, CategoryUpdate, CategoryOut,
     ProductCreate, ProductUpdate, ProductOut,
-    InventoryUpdate, InventoryOut
+    InventoryUpdate, InventoryOut, PaginatedProductOut
 )
 
 router = APIRouter(prefix="/catalog", tags=["Catalog"])
@@ -130,17 +132,21 @@ def delete_category(
 # PRODUCTS ENDPOINTS
 # ==========================================
 
-@router.get("/products", response_model=list[ProductOut])
+@router.get("/products", response_model=PaginatedProductOut)
 def list_products(
     category_id: uuid.UUID | None = None,
     include_unavailable: bool = False,
     is_topping: bool | None = None,
     is_base: bool | None = None,
+    search: str | None = None,
+    tags: str | None = None,
+    page: int = 1,
+    page_size: int = 20,
     db: Session = Depends(get_db)
 ):
     """
     Lista todos os produtos ativos (não excluídos logicamente).
-    Público. Suporta filtros por categoria, acompanhamentos e bases.
+    Público. Suporta filtros por categoria, acompanhamentos, bases, busca textual, tags e paginação.
     """
     query = db.query(Product).filter(Product.deleted_at == None)
     
@@ -152,8 +158,30 @@ def list_products(
         query = query.filter(Product.is_topping == is_topping)
     if is_base is not None:
         query = query.filter(Product.is_base == is_base)
+    if search:
+        search_filter = f"%{search}%"
+        query = query.filter(
+            or_(
+                Product.name.ilike(search_filter),
+                Product.description.ilike(search_filter)
+            )
+        )
+    if tags:
+        tag_list = [t.strip() for t in tags.split(",") if t.strip()]
+        for tag in tag_list:
+            query = query.filter(Product.tags.like(f'%"{tag}"%'))
 
-    return query.order_by(Product.display_order).all()
+    total = query.count()
+    pages = (total + page_size - 1) // page_size if total > 0 else 0
+    offset = (page - 1) * page_size
+    items = query.order_by(Product.display_order).offset(offset).limit(page_size).all()
+
+    return {
+        "items": items,
+        "total": total,
+        "page": page,
+        "pages": pages
+    }
 
 
 @router.get("/products/{product_id}", response_model=ProductOut)
@@ -310,3 +338,42 @@ def update_product_inventory(
     db.commit()
     db.refresh(inventory)
     return inventory
+
+
+@router.post("/upload-image", response_model=dict)
+def upload_image(
+    file: UploadFile = File(...),
+    gerente_user: User = Depends(RequireRole(UserRole.GERENTE))
+):
+    """
+    Realiza o upload de uma imagem para o servidor.
+    Retorna a URL da imagem.
+    Acesso restrito a GERENTE.
+    """
+    # Validar extensão do arquivo
+    allowed_extensions = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext not in allowed_extensions:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Formato de arquivo não permitido. Extensões permitidas: {', '.join(allowed_extensions)}"
+        )
+    
+    # Criar um nome de arquivo único para evitar colisões
+    filename = f"{uuid.uuid4()}{ext}"
+    file_path = os.path.join("static/uploads", filename)
+    
+    # Salvar o arquivo
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro ao salvar a imagem: {str(e)}"
+        )
+        
+    # Retornar a URL relativa
+    image_url = f"/static/uploads/{filename}"
+    return {"image_url": image_url}
+

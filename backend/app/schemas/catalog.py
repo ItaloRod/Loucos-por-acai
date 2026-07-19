@@ -67,6 +67,14 @@ class ProductOut(ProductBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+class PaginatedProductOut(BaseModel):
+    items: list[ProductOut]
+    total: int
+    page: int
+    pages: int
+
+
+
 # --- CATEGORY SCHEMAS ---
 class CategoryBase(BaseModel):
     name: str = Field(..., max_length=100)
