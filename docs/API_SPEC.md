@@ -55,13 +55,14 @@ Este documento detalha a especificação completa da API REST para o sistema de 
 - **Roles:** Public
 - **Request Body:**
   | Field | Type | Required | Description |
-  |-------|------|----------|-------------|
+  |-------|------|----------|--------------|
   | name | string | Yes | Nome completo |
   | email | string (email) | Yes | Email |
   | password | string (min: 8) | Yes | Senha |
+  | cpf | string (14) | **Yes** | CPF do cliente. Formato: `000.000.000-00`. |
   | phone | string | No | Telefone de contato |
 - **Response (201 Created):** Retorna o mesmo payload do Login. Define cookies.
-- **Error Codes:** `AUTH_EMAIL_EXISTS` (400)
+- **Error Codes:** `AUTH_EMAIL_EXISTS` (400), `AUTH_CPF_EXISTS` (400)
 
 ### 2.3 Refresh Token
 - **Method:** `POST /api/v1/auth/refresh`
@@ -305,12 +306,12 @@ Este documento detalha a especificação completa da API REST para o sistema de 
 
 ### 8.1 Create Order
 - **Method:** `POST /api/v1/orders/`
-- **Description:** Cria um pedido (online ou PDV).
-- **Roles:** CLIENTE, FUNCIONARIO, GERENTE
+- **Description:** Cria um pedido (online, retirada ou PDV). O `order_type` determina o fluxo — pedidos `POS` iniciam diretamente com status `PREPARING`.
+- **Roles:** CLIENTE (tipos DELIVERY/PICKUP), FUNCIONARIO/GERENTE (todos os tipos)
 - **Request Body:**
   ```json
   {
-    "type": "DELIVERY", // DELIVERY, PICKUP, IN_STORE
+    "order_type": "DELIVERY",
     "items": [
       {
         "product_id": "uuid",
@@ -319,13 +320,20 @@ Este documento detalha a especificação completa da API REST para o sistema de 
         "notes": "Sem banana"
       }
     ],
-    "delivery_address_id": "uuid", // Obrigatório se DELIVERY
+    "delivery_address_id": "uuid",
     "payment_method": "PIX",
-    "apply_stamps_discount": false
+    "apply_stamps_discount": false,
+    "customer_id": "uuid"
   }
   ```
+  - `delivery_address_id`: Obrigatório se `order_type = DELIVERY`.
+  - `customer_id`: Opcional para DELIVERY/PICKUP (usa o usuário autenticado); obrigatório para `POS` quando o cliente é identificado por CPF.
+- **Validações do Backend (OrderService):**
+  - **Estoque:** `SELECT ... FOR UPDATE` em `Inventory` para cada item antes de deduzir — garante atomicidade.
+  - **max_choices:** Para cada item com `options_selected`, o serviço valida que `len(options_selected_por_grupo) <= ProductOption.max_choices`. Retorna `400 INVALID_OPTIONS` se excedido.
+  - **Horário:** Valida `BusinessHours` antes de aceitar pedidos online (não se aplica a `POS`).
 - **Response (201 Created):**
-  Retorna o `order_id`, total calculado e status inicial (PENDING).
+  Retorna o `order_id`, total calculado e status inicial (`PENDING` para online, `PREPARING` para POS).
 
 ### 8.2 List Orders
 - **Method:** `GET /api/v1/orders/`
@@ -389,15 +397,20 @@ Regra de negócio: R$20 = 1 selo. 10 selos = R$20 de desconto.
 ## 11. Sales/POS (`/api/v1/sales/`)
 
 ### 11.1 Create POS Sale
-- **Method:** `POST /api/v1/sales/`
-- **Description:** Registra uma venda direta no balcão.
-- **Roles:** FUNCIONARIO, GERENTE
-- Semelhante a `POST /orders/`, mas com status direto para `COMPLETED` e opções de `cash_tendered` e `change_due`.
+
+> ⚠️ **Decisão Arquitetural:** O endpoint de venda PDV **NÃO é um endpoint separado**. Utilize `POST /api/v1/orders/` com `order_type: "POS"`. O `OrderService` detecta o tipo e aplica o fluxo correto (status inicial `PREPARING`, dedução imediata de estoque e selos).
+
+**Campos adicionais aceitos no body ao usar `order_type: "POS"`:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|--------------|
+| `cash_tendered` | float | No | Valor em dinheiro entregue pelo cliente (para cálculo de troco). |
+| `change_due` | float | No | Troco calculado pelo frontend (validado pelo backend). |
 
 ### 11.2 Daily Summary
 - **Method:** `GET /api/v1/sales/daily-summary`
 - **Roles:** FUNCIONARIO, GERENTE
-- **Response:** Total arrecadado no dia atual, separado por método de pagamento.
+- **Response:** Total arrecadado no dia atual, separado por método de pagamento e tipo de pedido (POS vs Online).
 
 ---
 

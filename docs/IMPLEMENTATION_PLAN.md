@@ -20,16 +20,17 @@ O projeto consiste na reformulação completa do sistema "Loucos por Açaí", su
 
 ### Fase 0: Setup do Projeto (Foundation)
 *   Inicializar a estrutura básica do monorepo (`backend/` e `frontend/`).
-*   **Backend:** Configurar Poetry, dependências base do FastAPI, estrutura de pastas, configuração do banco de dados (SQLite) e Alembic para migrações.
+*   **Backend:** Configurar Poetry, dependências base do FastAPI, estrutura de pastas, configuração do banco de dados (**SQLite**) e Alembic para migrações.
 *   **Frontend:** Inicializar Vite + React + TypeScript, instalar Tailwind CSS e shadcn/ui.
 *   Configurar Redux Store (boilerplate básico).
 *   Configurar ferramentas de qualidade: ESLint, Prettier, pytest, Vitest.
 
 ### Fase 1: Core Backend (Auth + Models + Base API)
-*   Implementar todos os modelos do SQLAlchemy (Usuários, Produtos, Categorias, Pedidos, Itens, Estoque, Cartão Fidelidade, etc.).
+*   Implementar todos os modelos do SQLAlchemy (Usuários, Produtos, Categorias, Pedidos, Itens, Estoque, Cart/CartItem, Cartão Fidelidade, etc.) conforme `DATA_MODEL.md`.
 *   Criar a primeira migração do Alembic.
 *   Implementar autenticação JWT completa (login, registro, refresh token, logout com httpOnly cookies).
 *   Implementar middleware/dependências para RBAC (Role-Based Access Control).
+*   **Segurança:** Configurar rate limiting com `slowapi` nos endpoints de autenticação (`/auth/login`, `/auth/register`, `/auth/refresh`) — ex: max 10 req/min por IP. Isso é um requisito de segurança não-negociável, não um enhancement futuro.
 *   Implementar endpoints CRUD básicos para Usuários (Clientes, Funcionários, Gerentes).
 *   Implementar endpoints CRUD para Categorias e Produtos, e gerenciamento de Estoque.
 *   Escrever testes unitários (pytest) para auth e modelos.
@@ -236,7 +237,7 @@ graph TD
 | **Complexidade do JWT em SSR/SPA (Cookies httpOnly)** | Alto | Garantir configuração correta de CORS no FastAPI (allow credentials, allowed origins) desde a Fase 0. Usar proxy do Vite no desenvolvimento se necessário. |
 | **Modelagem do "Monte seu Açaí" (Preços dinâmicos)** | Alto | Utilizar um modelo flexível (Item Base + Modificadores) onde a validação de regras (ex: max 3 acompanhamentos) ocorra primariamente no Backend. |
 | **Geração de PDF no Backend** | Médio | Utilizar bibliotecas Python consolidadas (ReportLab ou WeasyPrint). Isolar a lógica em um serviço assíncrono caso fique lento. |
-| **Concorrência no PDV vs Estoque** | Médio | Usar bloqueio em nível de banco de dados (`SELECT ... FOR UPDATE`) no SQLAlchemy ao atualizar as quantidades de estoque durante o checkout. |
+| **Concorrência no PDV vs Estoque** | Médio | O SQLite serializa escritas por padrão (modo WAL), o que mitiga race conditions em volumes típicos de uma loja física. No `OrderService.checkout()`, usar transações explícitas e verificar o estoque antes de deduzir dentro do mesmo bloco `async with session.begin()`. Adotar PostgreSQL no futuro caso o volume de acessos simultâneos aumente. |
 | **Conflitos de Subagentes em Monorepo** | Alto | Segregar estritamente as tarefas. Agentes de backend não tocam em frontend e vice-versa até a Fase 3. Adotar pull-requests ou commits pequenos com rebase constante. |
 
 ---

@@ -106,6 +106,16 @@ O projeto utilizará uma estrutura de monorepo simplificada:
 
 ## 5. Modelagem de Dados (ERD)
 
+> ⚠️ **DEPRECADO — Esta seção é mantida apenas como referência histórica de design.**
+>
+> O ERD abaixo está desatualizado e **não deve ser usado como referência de implementação**. Ele contém inconsistências conhecidas:
+> - Usa `int id` em vez de `UUID` como chave primária
+> - `stock_quantity` embutido em `Product` em vez de entidade `Inventory` separada
+> - Ausência de `Cart`/`CartItem` com `expires_at`
+> - Convenção de `day_of_week` divergente
+>
+> **📌 Fonte autoritativa do modelo de dados: [`DATA_MODEL.md`](./DATA_MODEL.md)**
+
 A modelagem reflete a separação correta entre produtos de menu, estoque, carrinhos e pedidos. Isso resolve o bug crítico do sistema antigo que confundia a quantidade de estoque com a quantidade do carrinho.
 
 ```mermaid
